@@ -43,13 +43,30 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
 
       //Fetch Planets
-      fetchPlanets: async () => {
+      fetchLocations: async () => {
         try {
-          const response = await fetch("https://www.swapi.tech/api/planets");
+          // Fetch locations from Star Wars Databank API
+          const response = await fetch(
+            "https://starwars-databank-server.vercel.app/api/v1/locations"
+          );
           const data = await response.json();
-          setStore({ planets: data.results });
+
+          // Transform the data to match our needs
+          const locations = data.data.map((location) => ({
+            uid: location._id, // Unique ID from the API
+            name: location.name,
+            description: location.description || "No description available",
+            image:
+              location.image ||
+              "https://via.placeholder.com/400x500?text=No+Image",
+          }));
+
+          // Update store with locations
+          setStore({ locations });
+
+          console.log("Fetched Locations:", locations);
         } catch (error) {
-          console.error("Error fetching planets:", error);
+          console.error("Error fetching locations:", error);
         }
       },
 
