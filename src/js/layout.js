@@ -5,6 +5,7 @@ import ScrollToTop from "./component/scrollToTop";
 import Home from "./views/home";
 import { Details } from "./views/details";
 import { Location } from "./views/locations";
+import { Starships } from "./views/starships";
 import injectContext from "./store/appContext";
 
 import { Navbar } from "./component/navbar";
@@ -25,6 +26,7 @@ const Layout = () => {
             <Route path="/" element={<Home />} />
             <Route path="/details/:id" element={<Details />} />
             <Route path="/location/:id" element={<Location />} />
+            <Route path="/starship/:id" element={<Starships />} />
           </Routes>
           <Footer />
         </ScrollToTop>

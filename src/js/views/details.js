@@ -37,8 +37,7 @@ export const Details = () => {
         <div className="col-md-6">
           <h1 className="fw-bold">{person.name}</h1>
           <p className="text-muted">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut
-            perspiciatis unde omnis iste natus error sit voluptatem accusantium.
+            {person.description || "No description available."}
           </p>
         </div>
       </div>
