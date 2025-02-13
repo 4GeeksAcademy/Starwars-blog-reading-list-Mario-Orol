@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
 import starwars from "../../img/starwars.png";
+import SearchBar from "./searchBar";
 
 export const Navbar = () => {
   const { store, actions } = useContext(Context);
@@ -11,6 +12,9 @@ export const Navbar = () => {
       <Link className="navbar-brand" to="/">
         <img src={starwars} alt="Logo" width="50" height="50" />
       </Link>
+
+      {/* Search Bar */}
+      <SearchBar />
 
       {/* Favorites Dropdown */}
       <div className="dropdown">
@@ -28,15 +32,15 @@ export const Navbar = () => {
           {store.favorites.length > 0 ? (
             store.favorites.map((fav) => (
               <li
-                key={fav.uid}
-                className="d-flex justify-content-between align-item-center px-3"
+                key={`${fav.uid}-${fav.type}`}
+                className="d-flex justify-content-between align-items-center px-3"
               >
-                <Link to={`/details/${fav.uid}`} className="drowdown-item">
-                  {fav.name}
+                <Link to={`/${fav.type}/${fav.uid}`} className="dropdown-item">
+                  {fav.name} <span className="text-muted">({fav.type})</span>
                 </Link>
                 <button
                   className="btn btn-light btn-sm"
-                  onClick={() => actions.removeFavorite(fav.uid)}
+                  onClick={() => actions.removeFavorite(fav.uid, fav.type)}
                 >
                   <i className="fas fa-trash-alt"></i>
                 </button>

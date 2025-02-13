@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
 
-export const Details = () => {
+export const Characters = () => {
   const { store, actions } = useContext(Context);
   const { id } = useParams();
 
@@ -14,9 +14,6 @@ export const Details = () => {
 
   // Find person in store.people
   const person = store.people.find((p) => p.uid === id.toString()); // Ensure both are strings
-
-  console.log("People in store:", store.people);
-  console.log("Looking for ID:", id);
 
   if (!person) return <h1 className="text-center">Loading...</h1>;
 

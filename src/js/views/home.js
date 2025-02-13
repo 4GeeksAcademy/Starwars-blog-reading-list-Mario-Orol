@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { Context } from "../store/appContext";
 import { Link } from "react-router-dom";
-
+import rigo from "../../img/rigo-baby.jpg";
 const Home = () => {
   const { store, actions } = useContext(Context);
 
@@ -18,16 +18,16 @@ const Home = () => {
         className="d-flex overflow-auto p-3"
         style={{ whiteSpace: "nowrap" }}
       >
-        {store.people.map((person) => (
+        {store.people.map((character) => (
           <div
-            key={person.uid}
+            key={character.uid}
             className="card mx-2"
             style={{ minWidth: "400px" }}
           >
             <img
-              src={person.image}
+              src={character.image || rigo}
               className="card-img-top"
-              alt="..."
+              alt={character.name || "rigo"}
               style={{
                 width: "400px",
                 height: "400px",
@@ -35,33 +35,36 @@ const Home = () => {
               }}
             />
             <div className="card-body">
-              <h5 className="card-title">{person.name}</h5>
+              <h5 className="card-title">{character.name}</h5>
               <p className="card-text mb-0">
-                Gender: {person.properties.gender}
+                Gender: {character.properties.gender}
               </p>
               <p className="card-text mb-0">
-                Hair Color: {person.properties.hair_color}
+                Hair Color: {character.properties.hair_color}
               </p>
               <p className="card-text mb-0">
-                Eye-Color: {person.properties.eye_color}
+                Eye-Color: {character.properties.eye_color}
               </p>
               <div className="d-flex justify-content-between my-2">
                 <Link
-                  to={`/details/${person.uid}`}
+                  to={`/character/${character.uid}`}
                   className="btn btn-outline-primary"
                 >
                   Learn More!
                 </Link>
                 <button
-                  onClick={() => actions.addFavorite(person)}
+                  onClick={() => actions.addFavorite(character)}
                   className="btn btn-outline-warning"
                 >
                   <i
                     className={
-                      store.favorites.some((fav) => fav.uid === person.uid)
-                        ? "fas fa-heart text-warning" // Solid Heart if Favorite
+                      store.favorites.some(
+                        (fav) =>
+                          fav.uid === character.uid && fav.type === "character"
+                      )
+                        ? "fas fa-heart text-warning"
                         : "far fa-heart text-warning"
-                    } // Regular Heart if Not Favorite
+                    }
                   ></i>
                 </button>
               </div>
@@ -82,9 +85,9 @@ const Home = () => {
             style={{ minWidth: "400px" }}
           >
             <img
-              src={locations.image}
+              src={locations.image || rigo}
               className="card-img-top"
-              alt="..."
+              alt={locations.name || "rigo"}
               style={{
                 width: "400px",
                 height: "400px",
@@ -118,10 +121,13 @@ const Home = () => {
                 >
                   <i
                     className={
-                      store.favorites.some((fav) => fav.uid === locations.uid)
-                        ? "fas fa-heart text-warning" // Solid Heart if Favorite
+                      store.favorites.some(
+                        (fav) =>
+                          fav.uid === locations.uid && fav.type === "location"
+                      )
+                        ? "fas fa-heart text-warning" // ✅ Solid Heart when in favorites
                         : "far fa-heart text-warning"
-                    } // Regular Heart if Not Favorite
+                    } // ✅ Outline Heart when not in favorites
                   ></i>
                 </button>
               </div>
@@ -142,9 +148,9 @@ const Home = () => {
             style={{ minWidth: "400px" }}
           >
             <img
-              src={starships.image}
+              src={starships.image || rigo}
               className="card-img-top"
-              alt="..."
+              alt={starships.name || "rigo"}
               style={{
                 width: "400px",
                 height: "400px",
@@ -175,10 +181,13 @@ const Home = () => {
                 >
                   <i
                     className={
-                      store.favorites.some((fav) => fav.uid === starships.uid)
-                        ? "fas fa-heart text-warning" // Solid Heart if Favorite
+                      store.favorites.some(
+                        (fav) =>
+                          fav.uid === starships.uid && fav.type === "starship"
+                      )
+                        ? "fas fa-heart text-warning" // ✅ Solid Heart when in favorites
                         : "far fa-heart text-warning"
-                    } // Regular Heart if Not Favorite
+                    } // ✅ Outline Heart when not in favorites
                   ></i>
                 </button>
               </div>

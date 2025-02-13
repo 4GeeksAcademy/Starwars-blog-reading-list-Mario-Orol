@@ -1,15 +1,33 @@
 const getState = ({ getStore, getActions, setStore }) => {
+  // Load store from localStorage on app start
+
+  const updateLocalStorage = () => {
+    localStorage.setItem("starwarsStore", JSON.stringify(getStore()));
+  };
+
   return {
     store: {
       people: [],
       person: null,
       planets: [],
-      vehicles: [],
+      locations: [],
+      starships: [],
       favorites: [],
     },
     actions: {
+      //Load store from localStorage AFTER store is initialized
+      initializeStore: () => {
+        const savedStore = localStorage.getItem("starwarsStore");
+        if (savedStore) {
+          setStore(JSON.parse(savedStore)); // ✅ Now this runs after `store` is set
+        }
+      },
+
       // Fetch People
       fetchPeople: async () => {
+        const store = getStore();
+        if (store.people.length > 0) return;
+
         try {
           const response = await fetch("https://www.swapi.tech/api/people");
           const data = await response.json();
@@ -31,13 +49,13 @@ const getState = ({ getStore, getActions, setStore }) => {
                 name: person.name,
                 description: personData.result.description,
                 properties: personData.result.properties, // Store ALL properties
-                image:
-                  imageData.image ||
-                  "https://via.placeholder.com/400x500?text=No+Image",
+                image: imageData.image,
               };
             })
           );
+
           setStore({ people: peopleDetails });
+          updateLocalStorage();
         } catch (error) {
           console.error("Error fetching people:", error);
         }
@@ -45,6 +63,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 
       //Fetch Planets
       fetchLocations: async () => {
+        const store = getStore();
+        if (store.locations.length > 0) return;
+
         try {
           // Fetch locations from Star Wars Databank API
           const response = await fetch(
@@ -57,13 +78,12 @@ const getState = ({ getStore, getActions, setStore }) => {
             uid: location._id, // Unique ID from the API
             name: location.name,
             description: location.description || "No description available",
-            image:
-              location.image ||
-              "https://via.placeholder.com/400x500?text=No+Image",
+            image: location.image,
           }));
 
           // Update store with locations
           setStore({ locations });
+          updateLocalStorage();
         } catch (error) {
           console.error("Error fetching locations:", error);
         }
@@ -71,6 +91,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 
       // Fetch Starships
       fetchStarships: async () => {
+        const store = getStore();
+        if (store.starships.length > 0) return;
+
         try {
           const response = await fetch("https://www.swapi.tech/api/starships");
           const data = await response.json();
@@ -121,9 +144,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                   name: starship.name,
                   description,
                   properties,
-                  image:
-                    matchingVehicle?.image ||
-                    "https://via.placeholder.com/400x500?text=No+Image",
+                  image: matchingVehicle?.image,
                 };
               } catch (error) {
                 console.error(
@@ -137,6 +158,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
           // Filter out any null values (if any fetch failed)
           setStore({ starships: starshipDetails.filter((s) => s !== null) });
+          updateLocalStorage();
         } catch (error) {
           console.error("Error fetching vehicles:", error);
         }
@@ -146,25 +168,45 @@ const getState = ({ getStore, getActions, setStore }) => {
       addFavorite: (item) => {
         const store = getStore();
 
-        const isFavorite = store.favorites.some((fav) => fav.uid === item.uid);
+        // ✅ Ensure `type` is correctly assigned before adding to favorites
+        let type = "";
+        if (store.people.some((p) => p.uid === item.uid)) type = "character";
+        else if (store.locations.some((l) => l.uid === item.uid))
+          type = "location";
+        else if (store.starships.some((s) => s.uid === item.uid))
+          type = "starship";
+
+        // ✅ Check if the item (uid + type) is already in favorites
+        const isFavorite = store.favorites.some(
+          (fav) => fav.uid === item.uid && fav.type === type
+        );
 
         if (isFavorite) {
-          // Remove from favorites
+          // ✅ Remove the exact item (uid + type)
           setStore({
-            favorites: store.favorites.filter((fav) => fav.uid !== item.uid),
+            favorites: store.favorites.filter(
+              (fav) => !(fav.uid === item.uid && fav.type === type)
+            ),
           });
         } else {
-          // Add to favorites
-          setStore({ favorites: [...store.favorites, item] });
+          // ✅ Store `uid + type` properly
+          const newItem = { ...item, type };
+          setStore({ favorites: [...store.favorites, newItem] });
         }
+
+        updateLocalStorage();
       },
 
       // Remove from Favorites
-      removeFavorite: (uid) => {
+      removeFavorite: (uid, type) => {
         const store = getStore();
         setStore({
-          favorites: store.favorites.filter((fav) => fav.uid !== uid),
+          favorites: store.favorites.filter(
+            (fav) => !(fav.uid === uid && fav.type === type)
+          ),
         });
+
+        updateLocalStorage();
       },
     },
   };

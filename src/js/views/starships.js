@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
+import rigo from "../../img/rigo-baby.jpg";
 
 export const Starships = () => {
   const { store } = useContext(Context);
@@ -19,7 +20,7 @@ export const Starships = () => {
         {/* Left Side - Image */}
         <div className="col-md-6">
           <img
-            src={starship.image}
+            src={starship.image || rigo}
             alt={starship.name}
             className="img-fluid rounded"
             style={{ maxWidth: "500px" }}
